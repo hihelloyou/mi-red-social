@@ -7,7 +7,6 @@ import { supabase } from '@/lib/supabase'
 import { ArrowLeft, Heart, MessageCircle, Send, Bookmark } from 'lucide-react'
 import Link from 'next/link'
 
-// Definir tipos localmente para evitar errores
 type Profile = {
   id: string
   username: string
@@ -56,7 +55,6 @@ export default function PostPage() {
 
   async function loadPost() {
     try {
-      // Obtener el post
       const { data: postData, error: postError } = await supabase
         .from('posts')
         .select(`
@@ -76,19 +74,16 @@ export default function PostPage() {
         return
       }
 
-      // Obtener likes count
       const { count: likesCount } = await supabase
         .from('likes')
         .select('*', { count: 'exact', head: true })
         .eq('post_id', params.id)
 
-      // Obtener comments count
       const { count: commentsCount } = await supabase
         .from('comments')
         .select('*', { count: 'exact', head: true })
         .eq('post_id', params.id)
 
-      // Verificar si el usuario dio like
       const { data: userLike } = await supabase
         .from('likes')
         .select('*')
@@ -111,7 +106,6 @@ export default function PostPage() {
         user_liked: !!userLike,
       })
 
-      // Cargar comentarios
       await loadComments()
     } catch (err) {
       console.error('Error:', err)
@@ -205,7 +199,6 @@ export default function PostPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
         <div className="bg-white border-b sticky top-0 z-10">
           <div className="flex items-center px-4 py-3">
             <button onClick={() => router.back()} className="p-1 hover:bg-gray-100 rounded-full transition">
@@ -217,7 +210,6 @@ export default function PostPage() {
 
         <div className="p-4">
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            {/* Autor */}
             <div className="p-4 border-b">
               <Link href={`/profile/${post.user_id}`} className="flex items-center space-x-2">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
@@ -231,7 +223,6 @@ export default function PostPage() {
               </p>
             </div>
 
-            {/* Acciones */}
             <div className="flex items-center justify-between px-4 py-3 border-b">
               <div className="flex items-center space-x-4">
                 <button
@@ -251,7 +242,6 @@ export default function PostPage() {
               </button>
             </div>
 
-            {/* Comentarios */}
             <div className="p-4">
               <h3 className="font-semibold text-sm mb-3">Comentarios</h3>
               <div className="space-y-3 max-h-96 overflow-y-auto mb-4">
@@ -278,7 +268,6 @@ export default function PostPage() {
                 )}
               </div>
 
-              {/* Input para comentar */}
               <div className="flex space-x-2">
                 <input
                   type="text"
