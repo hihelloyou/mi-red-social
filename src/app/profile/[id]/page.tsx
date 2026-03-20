@@ -3,9 +3,27 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
-import { supabase, Profile, Post } from '@/lib/supabase'
-import { Edit3, UserPlus, UserCheck, ArrowLeft, Grid } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
+import { ArrowLeft, Edit3, UserPlus, UserCheck, Grid } from 'lucide-react'
 import Link from 'next/link'
+
+type Profile = {
+  id: string
+  username: string
+  full_name: string
+  avatar_url: string | null
+  bio: string | null
+  website: string | null
+  created_at: string
+}
+
+type Post = {
+  id: string
+  user_id: string
+  content: string
+  image_url: string | null
+  created_at: string
+}
 
 export default function ProfilePage() {
   const params = useParams()
@@ -24,8 +42,11 @@ export default function ProfilePage() {
   const profileId = params.id as string
 
   useEffect(() => {
-    if (!user) router.push('/login')
-    else loadProfile()
+    if (!user) {
+      router.push('/login')
+      return
+    }
+    loadProfile()
   }, [profileId, user])
 
   async function loadProfile() {
@@ -120,16 +141,17 @@ export default function ProfilePage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-500">Usuario no encontrado</p>
-          <button onClick={() => router.back()} className="mt-2 text-pink-500 text-sm">Volver</button>
+          <button onClick={() => router.push('/')} className="mt-2 text-pink-500 text-sm">
+            Volver al inicio
+          </button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
         <div className="bg-white border-b sticky top-0 z-10">
           <div className="flex items-center px-4 py-3">
             <button onClick={() => router.back()} className="p-1">
@@ -139,7 +161,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Info del perfil */}
         <div className="bg-white px-4 py-6">
           <div className="flex justify-between items-start">
             <div className="flex items-center space-x-4">
@@ -172,7 +193,6 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {/* Estadísticas */}
           <div className="flex space-x-6 mt-5">
             <div><span className="font-bold">{posts.length}</span> <span className="text-gray-500 text-sm">publicaciones</span></div>
             <div><span className="font-bold">{followersCount}</span> <span className="text-gray-500 text-sm">seguidores</span></div>
@@ -180,7 +200,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Editar perfil */}
         {editing && isOwnProfile && (
           <div className="bg-white mx-4 mb-4 p-4 rounded-xl shadow-sm border border-gray-100">
             <form onSubmit={handleUpdateProfile} className="space-y-3">
@@ -196,7 +215,6 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Publicaciones */}
         <div className="px-4 pb-6">
           <div className="flex items-center space-x-2 border-b pb-2 mb-3">
             <Grid className="w-4 h-4" />
